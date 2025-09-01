@@ -2,44 +2,45 @@
 
 namespace Nanorocks\LicenseManager;
 
-use Spatie\LaravelPackageTools\Package;
-use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Nanorocks\LicenseManager\Commands\GenerateLicenseCommand;
-use Nanorocks\LicenseManager\Commands\RevokeLicenseCommand;
+use Illuminate\Support\ServiceProvider;
+use Nanorocks\LicenseManager\Services\LicenseService;
 
-class LicenseManagerServiceProvider extends PackageServiceProvider
+class LicenseManagerServiceProvider extends ServiceProvider
 {
-    public function configurePackage(Package $package): void
-    {
-        $package
-            ->name('license-manager')
-            ->hasConfigFile() // Publishes config/license-manager.php
-            ->hasMigration('create_licenses_table') // Publishes migration
-            ->hasCommand(GenerateLicenseCommand::class)
-            ->hasCommand(RevokeLicenseCommand::class);
-    }
-
     public function boot(): void
     {
         if ($this->app->runningInConsole()) {
-            // Publishes only the config
+            // Publishes migrations
+            $this->publishes([
+                __DIR__ . '/../database/migrations/2025_09_01_000000_create_licenses_table.php' => database_path('migrations/2025_09_01_000000_create_licenses_table.php'),
+            ], 'license-manager-migrations');
+
+            // Publishes config
             $this->publishes([
                 __DIR__ . '/../config/license-manager.php' => config_path('license-manager.php'),
             ], 'license-manager-config');
 
-            // Publishes the specific migration
-            $this->publishes([
-                __DIR__ . '/../database/migrations/2025_09_01_000000_create_licenses_table.php' => database_path('migrations/2025_09_01_000000_create_licenses_table.php'),
-            ], 'license-manager-migrations');
+            // Commands
+            if (class_exists(\Nanorocks\LicenseManager\Commands\GenerateLicenseCommand::class)) {
+                $this->commands([
+                    \Nanorocks\LicenseManager\Commands\GenerateLicenseCommand::class,
+                    \Nanorocks\LicenseManager\Commands\RevokeLicenseCommand::class,
+                ]);
+            }
         }
     }
 
     public function register(): void
     {
-        // Merge config from package root
+        // Merge config
         $this->mergeConfigFrom(
             __DIR__ . '/../config/license-manager.php',
             'license-manager'
         );
+
+        // Bind the License Service
+        $this->app->singleton('license-manager', function () {
+            return new LicenseService();
+        });
     }
 }
