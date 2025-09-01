@@ -1,5 +1,3 @@
 <?php
 
-use VendorName\Skeleton\Tests\TestCase;
-
-uses(TestCase::class)->in(__DIR__);
+uses(Nanorocks\LicenseManager\Tests\TestCase::class)->in('Feature', 'Unit');

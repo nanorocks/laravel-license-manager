@@ -1,37 +1,47 @@
 <?php
 
-namespace VendorName\Skeleton\Tests;
+namespace Nanorocks\LicenseManager\Tests;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Orchestra\Testbench\TestCase as Orchestra;
-use VendorName\Skeleton\SkeletonServiceProvider;
+use Orchestra\Testbench\TestCase as OrchestraTestCase;
 
-class TestCase extends Orchestra
+abstract class TestCase extends OrchestraTestCase
 {
+    /**
+     * Load package service provider.
+     */
+    protected function getPackageProviders($app)
+    {
+        return [
+            \Nanorocks\LicenseManager\LicenseManagerServiceProvider::class,
+        ];
+    }
+
+    protected function getEnvironmentSetUp($app)
+    {
+        $app['config']->set('license-manager.default_expiry_days', 365);
+    }
+
+    /**
+     * Load package aliases (facades), ако користиш.
+     */
+    protected function getPackageAliases($app)
+    {
+        return [
+            // 'LicenseManager' => \Nanorocks\LicenseManager\Facades\LicenseManager::class,
+        ];
+    }
+
+    /**
+     * Set up the test environment.
+     */
     protected function setUp(): void
     {
         parent::setUp();
 
-        Factory::guessFactoryNamesUsing(
-            fn (string $modelName) => 'VendorName\\Skeleton\\Database\\Factories\\'.class_basename($modelName).'Factory'
-        );
-    }
+        // Run migrations for package
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
 
-    protected function getPackageProviders($app)
-    {
-        return [
-            SkeletonServiceProvider::class,
-        ];
-    }
-
-    public function getEnvironmentSetUp($app)
-    {
-        config()->set('database.default', 'testing');
-
-        /*
-         foreach (\Illuminate\Support\Facades\File::allFiles(__DIR__ . '/database/migrations') as $migration) {
-            (include $migration->getRealPath())->up();
-         }
-         */
+        // Optionally seed data if needed
+        // $this->artisan('db:seed', ['--class' => 'LicenseSeeder']);
     }
 }
