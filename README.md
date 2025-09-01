@@ -4,6 +4,7 @@ A Laravel package for flexible license key management. Ideal for SaaS platforms,
 
 &#x20; &#x20;
 
+
 ## Installation
 
 Install the package via Composer:
