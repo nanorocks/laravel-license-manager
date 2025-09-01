@@ -1,62 +1,86 @@
-# A Laravel package for flexible license key management. Ideal for SaaS platforms, plugins, and systems that require license validation, assignment, and lifecycle management.
+# Laravel License Manager
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/nanorocks/laravel-license-manager.svg?style=flat-square)](https://packagist.org/packages/nanorocks/laravel-license-manager)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/nanorocks/laravel-license-manager/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/nanorocks/laravel-license-manager/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/nanorocks/laravel-license-manager/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/nanorocks/laravel-license-manager/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/nanorocks/laravel-license-manager.svg?style=flat-square)](https://packagist.org/packages/nanorocks/laravel-license-manager)
+A Laravel package for flexible license key management. Ideal for SaaS platforms, plugins, and systems that require license validation, assignment, and lifecycle management. This package allows you to generate, assign, validate, and manage license keys stored in your database. Includes Facade support for easy integration anywhere in your application.
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
-
-## Support us
-
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/laravel-license-manager.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/laravel-license-manager)
-
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
-
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
+&#x20; &#x20;
 
 ## Installation
 
-You can install the package via composer:
+Install the package via Composer:
 
 ```bash
 composer require nanorocks/laravel-license-manager
 ```
 
-You can publish and run the migrations with:
+Publish and run the migrations:
 
 ```bash
 php artisan vendor:publish --tag="laravel-license-manager-migrations"
 php artisan migrate
 ```
 
-You can publish the config file with:
+Publish the configuration:
 
 ```bash
 php artisan vendor:publish --tag="laravel-license-manager-config"
 ```
 
-This is the contents of the published config file:
+**Example config file (**``**):**
 
 ```php
 return [
+    'key_length' => 16,
+    'default_expiration_days' => 30,
+    'table_name' => 'plugin_database_newsletter_licenses',
 ];
-```
-
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag="laravel-license-manager-views"
 ```
 
 ## Usage
 
+### Using the Service Class
+
 ```php
-$LicenseManager = new Nanorocks\LicenseManager();
-echo $LicenseManager->echoPhrase('Hello, Nanorocks!');
+use Nanorocks\LicenseManager\Services\LicenseService;
+
+$service = app(LicenseService::class);
+
+// Generate a license
+$license = $service->createLicense([
+    'license_key' => 'TEST-1234',
+    'assigned_to' => 'user@example.com',
+    'expires_at' => now()->addDays(30),
+]);
+
+// Validate a license
+$isValid = $service->validateLicense('TEST-1234');
+
+// Assign a license to a user
+$service->assignLicense('TEST-1234', 'anotheruser@example.com');
+
+// Deactivate a license
+$service->deactivateLicense('TEST-1234');
+```
+
+### Using the Facade
+
+```php
+use Nanorocks\LicenseManager\Facades\LicenseManager;
+
+$isValid = LicenseManager::validateLicense('TEST-1234');
+LicenseManager::assignLicense('TEST-1234', 'user@example.com');
+```
+
+### Artisan Command
+
+Generate a license via Artisan:
+
+```bash
+php artisan license:generate --assigned-to="user@example.com" --expires-in=30 --key-length=16
 ```
 
 ## Testing
+
+Run the package tests:
 
 ```bash
 composer test
@@ -64,21 +88,21 @@ composer test
 
 ## Changelog
 
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
+Please see [CHANGELOG](CHANGELOG.md) for detailed information on changes and updates.
 
 ## Contributing
 
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
+Please see [CONTRIBUTING](CONTRIBUTING.md) for contribution guidelines.
 
 ## Security Vulnerabilities
 
-Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
+Report any security issues via [our security policy](../../security/policy).
 
 ## Credits
 
 - [Nanorocks](https://github.com/nanorocks)
-- [All Contributors](../../contributors)
+- All Contributors ([GitHub](../../contributors))
 
 ## License
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+This package is open-source under the MIT License. See [LICENSE](LICENSE.md) for details.
