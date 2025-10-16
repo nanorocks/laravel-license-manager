@@ -1,4 +1,8 @@
 # Laravel License Manager
+![Laravel](https://img.shields.io/badge/Laravel-^10.x%20-red?style=flat-square)
+![PHP](https://img.shields.io/badge/PHP-^8.3-blue?style=flat-square)
+![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)
+[![Latest Stable Version](https://poser.pugx.org/nanorocks/laravel-database-newsletter/v/stable)](https://packagist.org/packages/nanorocks/laravel-database-newsletter)
 
 A Laravel package for flexible license key management. Ideal for SaaS platforms, plugins, and systems that require license validation, assignment, and lifecycle management. This package allows you to generate, assign, validate, and manage license keys stored in your database. Includes Facade support for easy integration anywhere in your application.
 
