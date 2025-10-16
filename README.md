@@ -16,14 +16,14 @@ composer require nanorocks/laravel-license-manager
 Publish and run the migrations:
 
 ```bash
-php artisan vendor:publish --tag="laravel-license-manager-migrations"
+php artisan vendor:publish --tag="license-manager-migrations"
 php artisan migrate
 ```
 
 Publish the configuration:
 
 ```bash
-php artisan vendor:publish --tag="laravel-license-manager-config"
+php artisan vendor:publish --tag="license-manager-config"
 ```
 
 **Example config file (**``**):**
